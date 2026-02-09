@@ -11,8 +11,8 @@ from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ENUM
 
-revision: str = "006"
-down_revision: Union[str, None] = "005"
+revision: str = "014"
+down_revision: Union[str, None] = "013"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -39,7 +39,7 @@ def upgrade() -> None:
     # Tabela roles
     op.create_table(
         "roles",
-        sa.Column("id", sa.Integer(), primary_key=True),
+        sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("key", sa.String(50), nullable=False, unique=True),
         sa.Column("name", sa.String(100), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
@@ -50,9 +50,9 @@ def upgrade() -> None:
     # Tabela user_roles (multi-cargo)
     op.create_table(
         "user_roles",
-        sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("role_id", sa.Integer(), sa.ForeignKey("roles.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("user_id", UUID(as_uuid=True), sa.ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("role_id", UUID(as_uuid=True), sa.ForeignKey("roles.id", ondelete="CASCADE"), nullable=False),
         sa.UniqueConstraint("user_id", "role_id", name="uq_user_role"),
     )
     op.create_index("ix_user_roles_id", "user_roles", ["id"])
@@ -67,7 +67,7 @@ def upgrade() -> None:
         sa.Column("title", sa.String(255), nullable=False),
         sa.Column("body", sa.Text(), nullable=False),
         sa.Column("priority", notification_priority_enum, default="normal", nullable=False),
-        sa.Column("author_user_id", sa.Integer(), sa.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True),
+        sa.Column("author_user_id", UUID(as_uuid=True), sa.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True),
         sa.Column("context_type", sa.String(50), nullable=True),
         sa.Column("context_id", sa.String(255), nullable=True),
         sa.Column("action_url", sa.Text(), nullable=True),
@@ -82,9 +82,9 @@ def upgrade() -> None:
     # Tabela notification_recipients
     op.create_table(
         "notification_recipients",
-        sa.Column("id", sa.Integer(), primary_key=True),
+        sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("notification_id", UUID(as_uuid=True), sa.ForeignKey("notifications.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("recipient_user_id", sa.Integer(), sa.ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("recipient_user_id", UUID(as_uuid=True), sa.ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False),
         sa.Column("delivered_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column("read_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("archived_at", sa.DateTime(timezone=True), nullable=True),
@@ -101,7 +101,7 @@ def upgrade() -> None:
         "conversations",
         sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("kind", conversation_kind_enum, nullable=False, default="DIRECT"),
-        sa.Column("created_by_user_id", sa.Integer(), sa.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True),
+        sa.Column("created_by_user_id", UUID(as_uuid=True), sa.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
     )
     op.create_index("ix_conversations_id", "conversations", ["id"])
@@ -110,9 +110,9 @@ def upgrade() -> None:
     # Tabela conversation_participants
     op.create_table(
         "conversation_participants",
-        sa.Column("id", sa.Integer(), primary_key=True),
+        sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("conversation_id", UUID(as_uuid=True), sa.ForeignKey("conversations.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("user_id", UUID(as_uuid=True), sa.ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False),
         sa.Column("last_read_at", sa.DateTime(timezone=True), nullable=True),
     )
     op.create_index("ix_conversation_participants_id", "conversation_participants", ["id"])
@@ -124,7 +124,7 @@ def upgrade() -> None:
         "messages",
         sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("conversation_id", UUID(as_uuid=True), sa.ForeignKey("conversations.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("author_user_id", sa.Integer(), sa.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True),
+        sa.Column("author_user_id", UUID(as_uuid=True), sa.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True),
         sa.Column("content", sa.Text(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column("edited_at", sa.DateTime(timezone=True), nullable=True),
@@ -136,10 +136,10 @@ def upgrade() -> None:
     # Tabela message_to_notification_links
     op.create_table(
         "message_to_notification_links",
-        sa.Column("id", sa.Integer(), primary_key=True),
+        sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("message_id", UUID(as_uuid=True), sa.ForeignKey("messages.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("recipient_user_id", sa.Integer(), sa.ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("notification_recipient_id", sa.Integer(), sa.ForeignKey("notification_recipients.id", ondelete="SET NULL"), nullable=True),
+        sa.Column("recipient_user_id", UUID(as_uuid=True), sa.ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("notification_recipient_id", UUID(as_uuid=True), sa.ForeignKey("notification_recipients.id", ondelete="SET NULL"), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
     )
     op.create_index("ix_message_to_notification_links_id", "message_to_notification_links", ["id"])
@@ -149,10 +149,10 @@ def upgrade() -> None:
     # Tabela audit_events
     op.create_table(
         "audit_events",
-        sa.Column("id", sa.Integer(), primary_key=True),
+        sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("event_type", sa.String(50), nullable=False),
-        sa.Column("actor_user_id", sa.Integer(), sa.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True),
-        sa.Column("target_user_id", sa.Integer(), sa.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True),
+        sa.Column("actor_user_id", UUID(as_uuid=True), sa.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True),
+        sa.Column("target_user_id", UUID(as_uuid=True), sa.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True),
         sa.Column("context_type", sa.String(50), nullable=True),
         sa.Column("context_id", sa.String(255), nullable=True),
         sa.Column("payload", sa.Text(), nullable=True),

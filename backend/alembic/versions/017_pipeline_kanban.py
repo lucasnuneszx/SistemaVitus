@@ -9,11 +9,11 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects.postgresql import UUID
 
 
-revision: str = "009"
-down_revision: Union[str, None] = "008"
+revision: str = "017"
+down_revision: Union[str, None] = "016"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -22,11 +22,11 @@ def upgrade() -> None:
     # Tabela pipelines
     op.create_table(
         "pipelines",
-        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("is_default", sa.Boolean(), nullable=False, server_default="false"),
-        sa.Column("created_by_user_id", sa.Integer(), nullable=True),
+        sa.Column("created_by_user_id", UUID(as_uuid=True), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
         sa.ForeignKeyConstraint(["created_by_user_id"], ["usuarios.id"], ondelete="SET NULL"),
@@ -37,8 +37,8 @@ def upgrade() -> None:
     # Tabela pipeline_stages
     op.create_table(
         "pipeline_stages",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("pipeline_id", sa.Integer(), nullable=False),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("pipeline_id", UUID(as_uuid=True), nullable=False),
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column("key", sa.String(length=50), nullable=True),
         sa.Column("order_index", sa.Integer(), nullable=False),
@@ -56,7 +56,7 @@ def upgrade() -> None:
     # Tabela deal_tags
     op.create_table(
         "deal_tags",
-        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("color", sa.String(length=20), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
@@ -68,10 +68,10 @@ def upgrade() -> None:
     # Tabela deals
     op.create_table(
         "deals",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("pipeline_id", sa.Integer(), nullable=False),
-        sa.Column("stage_id", sa.Integer(), nullable=False),
-        sa.Column("client_id", sa.Integer(), nullable=False),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("pipeline_id", UUID(as_uuid=True), nullable=False),
+        sa.Column("stage_id", UUID(as_uuid=True), nullable=False),
+        sa.Column("client_id", UUID(as_uuid=True), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=False),
         sa.Column("value_cents", sa.Integer(), nullable=True),
         sa.Column("currency", sa.String(length=3), nullable=False, server_default="BRL"),
@@ -81,9 +81,9 @@ def upgrade() -> None:
         sa.Column("status", sa.Enum("open", "won", "lost", name="dealstatus"), nullable=False, server_default="open"),
         sa.Column("position_index", sa.Numeric(precision=10, scale=2), nullable=False, server_default="0"),
         sa.Column("source", sa.Enum("inbound", "outbound", "indicacao", "evento", "rede_social", "outro", name="dealsource"), nullable=True),
-        sa.Column("proposal_id", sa.Integer(), nullable=True),
-        sa.Column("contract_id", sa.Integer(), nullable=True),
-        sa.Column("created_by_user_id", sa.Integer(), nullable=True),
+        sa.Column("proposal_id", UUID(as_uuid=True), nullable=True),
+        sa.Column("contract_id", UUID(as_uuid=True), nullable=True),
+        sa.Column("created_by_user_id", UUID(as_uuid=True), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
         sa.ForeignKeyConstraint(["pipeline_id"], ["pipelines.id"], ondelete="CASCADE"),
@@ -102,9 +102,9 @@ def upgrade() -> None:
     # Tabela deal_assignees
     op.create_table(
         "deal_assignees",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("deal_id", sa.Integer(), nullable=False),
-        sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("deal_id", UUID(as_uuid=True), nullable=False),
+        sa.Column("user_id", UUID(as_uuid=True), nullable=False),
         sa.Column("role", sa.String(length=20), nullable=False, server_default="collab"),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
         sa.ForeignKeyConstraint(["deal_id"], ["deals.id"], ondelete="CASCADE"),
@@ -118,9 +118,9 @@ def upgrade() -> None:
     # Tabela deal_tag_links
     op.create_table(
         "deal_tag_links",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("deal_id", sa.Integer(), nullable=False),
-        sa.Column("tag_id", sa.Integer(), nullable=False),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("deal_id", UUID(as_uuid=True), nullable=False),
+        sa.Column("tag_id", UUID(as_uuid=True), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
         sa.ForeignKeyConstraint(["deal_id"], ["deals.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["tag_id"], ["deal_tags.id"], ondelete="CASCADE"),
@@ -133,13 +133,13 @@ def upgrade() -> None:
     # Tabela deal_activities
     op.create_table(
         "deal_activities",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("deal_id", sa.Integer(), nullable=False),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("deal_id", UUID(as_uuid=True), nullable=False),
         sa.Column("type", sa.Enum("call", "email", "meeting", "whatsapp", "custom", name="dealactivitytype"), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=False),
         sa.Column("due_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("done_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("created_by_user_id", sa.Integer(), nullable=True),
+        sa.Column("created_by_user_id", UUID(as_uuid=True), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
         sa.ForeignKeyConstraint(["deal_id"], ["deals.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["created_by_user_id"], ["usuarios.id"], ondelete="SET NULL"),
@@ -150,9 +150,9 @@ def upgrade() -> None:
     # Tabela deal_notes
     op.create_table(
         "deal_notes",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("deal_id", sa.Integer(), nullable=False),
-        sa.Column("author_user_id", sa.Integer(), nullable=True),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("deal_id", UUID(as_uuid=True), nullable=False),
+        sa.Column("author_user_id", UUID(as_uuid=True), nullable=True),
         sa.Column("content", sa.Text(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
         sa.ForeignKeyConstraint(["deal_id"], ["deals.id"], ondelete="CASCADE"),
@@ -164,11 +164,11 @@ def upgrade() -> None:
     # Tabela deal_stage_history
     op.create_table(
         "deal_stage_history",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("deal_id", sa.Integer(), nullable=False),
-        sa.Column("from_stage_id", sa.Integer(), nullable=True),
-        sa.Column("to_stage_id", sa.Integer(), nullable=False),
-        sa.Column("moved_by_user_id", sa.Integer(), nullable=True),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("deal_id", UUID(as_uuid=True), nullable=False),
+        sa.Column("from_stage_id", UUID(as_uuid=True), nullable=True),
+        sa.Column("to_stage_id", UUID(as_uuid=True), nullable=False),
+        sa.Column("moved_by_user_id", UUID(as_uuid=True), nullable=True),
         sa.Column("moved_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=True),
         sa.Column("reason", sa.Text(), nullable=True),
         sa.Column("extra_metadata", sa.Text(), nullable=True),

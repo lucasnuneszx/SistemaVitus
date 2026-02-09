@@ -9,10 +9,11 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import UUID
 
 
-revision: str = "007"
-down_revision: Union[str, None] = "006"
+revision: str = "015"
+down_revision: Union[str, None] = "014"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -21,7 +22,7 @@ def upgrade() -> None:
     # Tabela permissions
     op.create_table(
         "permissions",
-        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("module", sa.String(length=50), nullable=False),
         sa.Column("action", sa.String(length=50), nullable=False),
         sa.Column("name", sa.String(length=200), nullable=False),
@@ -36,9 +37,9 @@ def upgrade() -> None:
     # Tabela role_permissions
     op.create_table(
         "role_permissions",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("role_id", sa.Integer(), sa.ForeignKey("roles.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("permission_id", sa.Integer(), sa.ForeignKey("permissions.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("id", UUID(as_uuid=True), nullable=False, primary_key=True, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("role_id", UUID(as_uuid=True), sa.ForeignKey("roles.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("permission_id", UUID(as_uuid=True), sa.ForeignKey("permissions.id", ondelete="CASCADE"), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("role_id", "permission_id", name="uq_role_permission")
     )
