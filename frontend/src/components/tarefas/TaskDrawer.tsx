@@ -80,7 +80,7 @@ type TaskWithNotion = {
   prioridade: string | null;
   data_vencimento: string | null;
   responsavel_id: string | null;
-  projeto_id: string | null;  // Adicionado
+  projeto_id: string | null;
   is_recurring: boolean;
   property_values: Array<{
     id: string;
@@ -119,7 +119,7 @@ export function TaskDrawer({
   const [prioridade, setPrioridade] = useState<string>("none");
   const [dataVencimento, setDataVencimento] = useState<string>("");
   const [responsavelId, setResponsavelId] = useState<string | null>(null);
-  const [projetoId, setProjetoId] = useState<string>(""); // Adicionado
+  const [projetoId, setProjetoId] = useState<string>("");
   const [isRecurring, setIsRecurring] = useState(false);
   const [blocks, setBlocks] = useState<TaskBlock[]>([]);
   const [propertyValues, setPropertyValues] = useState<Record<string, any>>({});
@@ -147,7 +147,7 @@ export function TaskDrawer({
       setDataVencimento(data.data_vencimento || "");
       setDataVencimento(data.data_vencimento || "");
       setResponsavelId(data.responsavel_id);
-      setProjetoId(data.projeto_id || ""); // Adicionado
+      setProjetoId(data.projeto_id || "");
       setIsRecurring(data.is_recurring);
       setBlocks(data.blocks || []);
 

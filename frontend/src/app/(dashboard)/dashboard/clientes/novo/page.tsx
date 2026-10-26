@@ -30,7 +30,6 @@ const emptyForm = {
   bairro: "",
   cidade: "",
   estado: "",
-  // New fields for the workflow
   plano: "pro",
   vincular_sofia: true,
   criar_crm: true,

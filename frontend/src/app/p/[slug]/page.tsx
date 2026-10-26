@@ -33,7 +33,6 @@ async function getPropostaBySlug(slug: string): Promise<PropostaPublic | null> {
     const json = await res.json();
 
     // O backend retorna { ok: true, data: {...} }
-    // Importante: validar se data existe antes de retornar
     if (json.ok && json.data) {
       return json.data;
     }

@@ -139,12 +139,9 @@ export default function BuilderPropostaPage() {
 
   async function saveBuilder() {
     if (!id) return;
-    console.log("Saving proposal with ID:", id);
-    console.log("Sections to save:", sections);
     setLoading(true);
     try {
       const payload = { landing_content: sections };
-      console.log("Payload being sent:", JSON.stringify(payload, null, 2));
       await api(`/api/v1/propostas/${id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
