@@ -1,49 +1,76 @@
 # Sistemaxi CRM
 
-ERP/CRM para gerenciamento de projetos.
+CRM/ERP multi-tenant para agências: clientes, leads e funil de vendas, projetos, tarefas, propostas com página pública, contratos, financeiro e atendimento via WhatsApp com agente de IA.
 
 ## Stack
 
-- **Backend:** FastAPI, PostgreSQL, SQLAlchemy, Alembic, JWT
-- **Frontend:** Next.js (App Router), Tailwind CSS, shadcn/ui, Motion, tema escuro/claro
+- Backend: Python, FastAPI, SQLAlchemy, Alembic, PostgreSQL, JWT
+- Frontend: Next.js (App Router), TypeScript, Tailwind CSS, Radix UI, Recharts
+- Integrações: Evolution API (WhatsApp), OpenAI/LangChain (agentes), Google Calendar, Google Places
 
-## Pré-requisitos
+## Rodando localmente
 
-- Python 3.11+
-- Node.js 18+
-- PostgreSQL
+Pré-requisitos: Python 3.11+, Node.js 18+ e PostgreSQL.
 
-## Backend
+### Backend
 
 ```bash
 cd backend
 python -m venv .venv
-.venv\Scripts\activate   # Windows
-# source .venv/bin/activate  # Linux/Mac
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env
-# Edite .env com DATABASE_URL e SECRET_KEY
-alembic upgrade head   # aplica todas as migrations (obrigatório após alterações no schema)
-python -m app.seed   # cria o primeiro usuário admin (email/senha do .env: ADMIN_EMAIL, ADMIN_PASSWORD)
+cp .env.example .env           # preencha as variáveis
+alembic upgrade head
+python -m app.seed             # cria o primeiro admin se a tabela de usuários estiver vazia
 uvicorn app.main:app --reload
 ```
 
-Se aparecer erro ao salvar cliente (coluna "tipo" não existe), rode `alembic upgrade head` para aplicar a migration 002. O seed cria o primeiro usuário só se a tabela `usuarios` estiver vazia. Credenciais padrão (ou as do seu `.env`): `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+API em http://localhost:8000 (healthcheck em `/health`).
 
-## Frontend
+### Frontend
 
 ```bash
 cd frontend
 npm install
 cp .env.local.example .env.local
-# Edite .env.local com NEXT_PUBLIC_API_URL (ex: http://localhost:8000)
 npm run dev
 ```
 
-Acesse http://localhost:3000 e faça login.
+Acesse http://localhost:3000. O Next faz proxy de `/api/*` e `/uploads/*` para `BACKEND_URL`.
 
-## Entidades
+## Variáveis de ambiente
 
-- Usuários, Clientes, Projetos, Tarefas, Propostas, Contratos
+Backend (`backend/.env`):
 
-Auth e token são gerenciados pelo backend (JWT). O frontend envia o token no header `Authorization: Bearer <token>`.
+- `DATABASE_URL` ou `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_SERVER`, `POSTGRES_PORT`, `POSTGRES_DB`
+- `SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES`
+- `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NOME`
+- `LEADS_API_KEY`
+- `OPENAI_API_KEY`, `GOOGLE_PLACES_API_KEY`
+- `DEBUG`, `ENVIRONMENT` (opcionais)
+
+Frontend (`frontend/.env.local`):
+
+- `NEXT_PUBLIC_API_URL`
+- `BACKEND_URL`
+
+## Estrutura
+
+```
+backend/
+  app/api/v1/     rotas da API
+  app/models/     models SQLAlchemy
+  app/schemas/    schemas Pydantic
+  app/services/   integrações (WhatsApp, OpenAI, agente Sofia, notificações)
+  app/scripts/    tarefas de manutenção (python -m app.scripts.<nome>)
+  alembic/        migrations
+  scripts/        smoke test e utilitários de desenvolvimento
+frontend/
+  src/app/        páginas (App Router)
+  src/components/ componentes por módulo
+  src/lib/        cliente da API e utilitários
+```
+
+## Deploy
+
+O backend sobe com `python -m uvicorn app.main:app` (ver `backend/Procfile` e `backend/railway.toml`).
