@@ -9,7 +9,7 @@ type Props = {
     onToggleVersion: () => void;
 }
 
-export function ProjectDashboardV2({ onToggleVersion }: Props) {
+export function ProjectDashboard({ onToggleVersion }: Props) {
     const [range, setRange] = useState("30d");
     const [status, setStatus] = useState("all");
     const [loading, setLoading] = useState(true);
@@ -50,11 +50,6 @@ export function ProjectDashboardV2({ onToggleVersion }: Props) {
             <KPICards data={kpiData} loading={loading} />
 
             <ChartsSection range={range} loading={loading} />
-
-            {/* We could add the detailed table here as requested in "D) Tabela/Ranking avançado" 
-          but for brevity and scope I'll stick to KPIs + Charts first.
-          The user can drill down by going to the Projects module via sidebar.
-      */}
         </div>
     );
 }
