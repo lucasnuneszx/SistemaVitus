@@ -1,6 +1,7 @@
 """
 API de Produtividade Mensal
 """
+import logging
 import uuid
 from datetime import datetime, timedelta, timezone, date
 from decimal import Decimal
@@ -16,6 +17,7 @@ from app.models.usuario import Usuario
 from app.models.tarefa import Tarefa
 from app.models.productivity import UserProductivityMetric
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -187,9 +189,7 @@ def get_my_productivity(
             request_id=request_id
         )
     except Exception as e:
-        import traceback
-        print(f"Error in get_my_productivity: {str(e)}")
-        print(traceback.format_exc())
+        logger.exception("Erro ao calcular produtividade: %s", e)
         return error_response(
             code="PRODUCTIVITY_ERROR",
             message=f"Erro ao calcular produtividade: {str(e)}",

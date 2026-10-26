@@ -1,6 +1,10 @@
+import logging
+
 from sqlalchemy.orm import Session
 from app.models.task_event import TaskEvent
 import json
+
+logger = logging.getLogger(__name__)
 
 def log_task_event(
     db: Session, 
@@ -28,5 +32,5 @@ def log_task_event(
         # Flush para garantir ID se necessário, mas commit fica por conta do caller
         db.flush()
     except Exception as e:
-        print(f"Erro ao logar evento de tarefa: {e}")
+        logger.warning("Erro ao registrar evento de tarefa: %s", e)
         # Não lança erro para não bloquear a ação principal

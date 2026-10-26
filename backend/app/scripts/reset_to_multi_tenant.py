@@ -15,7 +15,7 @@ from app.core.security import get_password_hash
 from sqlalchemy.orm import Session
 
 def reset_database():
-    print("⚠️  AVISO: Este script irá DELETAR TODOS OS DADOS do banco de dados atual.")
+    print("AVISO: Este script irá DELETAR TODOS OS DADOS do banco de dados atual.")
     confirm = input("Você tem certeza? (digite 'sim' para continuar): ")
     if confirm.lower() != 'sim':
         print("Operação cancelada.")
@@ -27,7 +27,7 @@ def reset_database():
     print("Creating all tables in the new architecture...")
     Base.metadata.create_all(bind=engine)
     
-    print("✅ Banco de dados recriado com sucesso.")
+    print("Banco de dados recriado com sucesso.")
     
     # Criar primeiro Tenant de teste
     print("Criando primeiro Tenant (Alpha Clean)...")
@@ -52,7 +52,7 @@ def reset_database():
         )
         db.add(admin)
         db.commit()
-        print(f"🚀 Sistema inicializado!")
+        print(f"Sistema inicializado!")
         print(f"Tenant ID: {tenant.id}")
         print(f"Login: admin@alphaclean.com / Senha: admin123")
     except Exception as e:

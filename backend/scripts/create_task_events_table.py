@@ -34,12 +34,12 @@ def run_migration():
             """
             db.execute(text(sql))
             db.commit()
-            print("✅ Tabela 'task_events' criada com sucesso.")
+            print("Tabela 'task_events' criada com sucesso.")
         else:
-            print("ℹ️ Tabela 'task_events' já existe.")
+            print("Tabela 'task_events' já existe.")
             
     except Exception as e:
-        print(f"❌ Erro na migração: {e}")
+        print(f"Erro na migração: {e}")
         db.rollback()
     finally:
         db.close()

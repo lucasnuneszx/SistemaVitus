@@ -30,10 +30,9 @@ from datetime import datetime
 import pytz
 
 async def get_agent_executor(tenant: Tenant, lead: Lead, conversation: LeadConversation, db_session: Session):
-    # Set context for tools
+    # As tools leem o tenant via contextvar
     current_tenant.set(tenant)
     
-    # 1. Initialize LLM
     api_key = tenant.openai_api_key or settings.OPENAI_API_KEY
     llm = ChatOpenAI(
         model=tenant.llm_model or "gpt-4o-mini",
@@ -41,7 +40,7 @@ async def get_agent_executor(tenant: Tenant, lead: Lead, conversation: LeadConve
         api_key=api_key
     )
     
-    # 2. Add Tools (ferramentas base para todos os planos)
+    # Ferramentas base, disponíveis em todos os planos
     tools = [
         Buscar_janelas_disponiveis,
         Criar_agendamento,
@@ -52,7 +51,6 @@ async def get_agent_executor(tenant: Tenant, lead: Lead, conversation: LeadConve
     ]
     
     # Ferramentas exclusivas do plano Premium (CRM + Kanban)
-    # Adaptado: no sistemavitus o plano chama-se "plano", então checamos string lower ou upper
     plan_name = str(tenant.plano).lower() if hasattr(tenant, "plano") and tenant.plano else ""
     if "premium" in plan_name:
         tools += [
@@ -62,7 +60,7 @@ async def get_agent_executor(tenant: Tenant, lead: Lead, conversation: LeadConve
             Kanban_Atualizar_Card
         ]
     
-    # 3. Create prompt — fallback automático por plano
+    # Sem prompt próprio no tenant, usa o padrão do plano
     system_p = tenant.system_prompt
     if not system_p:
         if "premium" in plan_name:
@@ -97,7 +95,6 @@ async def get_agent_executor(tenant: Tenant, lead: Lead, conversation: LeadConve
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ])
     
-    # 4. Bind prompt variables
     prompt = prompt.partial(
         data_atual=agora.strftime("%d/%m/%Y"),
         hora_atual=agora.strftime("%H:%M"),
@@ -105,7 +102,6 @@ async def get_agent_executor(tenant: Tenant, lead: Lead, conversation: LeadConve
         lead_id=str(lead.id)
     )
     
-    # 5. Set up memory
     chat_history = PostgresChatMessageHistory(db_session, conversation.id, tenant.id)
     chat_history.load_messages()
     
@@ -116,7 +112,6 @@ async def get_agent_executor(tenant: Tenant, lead: Lead, conversation: LeadConve
         k=15
     )
     
-    # 6. Build the agent executor
     agent = create_tool_calling_agent(llm, tools, prompt)
     executor = AgentExecutor(
         agent=agent, 

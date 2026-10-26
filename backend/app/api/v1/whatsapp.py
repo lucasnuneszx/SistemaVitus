@@ -431,7 +431,7 @@ async def whatsapp_webhook(
                         .first()
                     )
                     if conversation:
-                        logger.info(f"[WEBHOOK] ✅ Match por LID/remoteJid: {remote_jid} -> conv={conversation.id}, lead={conversation.lead.nome}")
+                        logger.info(f"[WEBHOOK] Match por LID/remoteJid: {remote_jid} -> conv={conversation.id}, lead={conversation.lead.nome}")
 
                 # Estratégia 2: Match por telefone
                 if not conversation:
@@ -462,7 +462,7 @@ async def whatsapp_webhook(
                             or (lead_tel_tail and lead_tel_tail == sender_tail)
                         ):
                             conversation = conv
-                            logger.info(f"[WEBHOOK] ✅ Match por telefone! lead={lead.nome}")
+                            logger.info(f"[WEBHOOK] Match por telefone! lead={lead.nome}")
                             break
 
                 # Estratégia 3: Match por instância WhatsApp (Meta Cloud API converte phone -> LID)
@@ -485,7 +485,7 @@ async def whatsapp_webhook(
                         )
                         if instance_conv:
                             conversation = instance_conv
-                            logger.info(f"[WEBHOOK] ✅ Match por instância! instance={instance}, conv={conversation.id}, lead={conversation.lead.nome}")
+                            logger.info(f"[WEBHOOK] Match por instância! instance={instance}, conv={conversation.id}, lead={conversation.lead.nome}")
 
                 if conversation:
                     logger.info(f"[WEBHOOK] Conversa ativa encontrada: {conversation.id} (lead={conversation.lead_id})")
@@ -517,8 +517,7 @@ async def whatsapp_webhook(
                             from langchain_community.callbacks.manager import get_openai_callback
                             from app.models.agent import AgentLog
                             
-                            # Note: The 'msg_text' is already saved in the DB by whatsapp.py above.
-                            # The executor will use this input to run the LangChain agent.
+                            # msg_text já foi salvo acima; o executor usa esse texto como entrada do agente.
                             executor = await get_agent_executor(tenant, lead, conversation, db)
                             
                             logger.info(f"[WEBHOOK] Invocando Sofia Agent para msg: '{msg_text[:50]}...'")
@@ -603,7 +602,7 @@ async def whatsapp_webhook(
                             .first()
                         )
                         if campaign_conv:
-                            logger.info(f"[WEBHOOK] ✅ Campaign conv match por LID: {remote_jid} -> conv={campaign_conv.id}")
+                            logger.info(f"[WEBHOOK] Campaign conv match por LID: {remote_jid} -> conv={campaign_conv.id}")
 
                     # Estratégia 2: Match por telefone do campaign lead
                     if not campaign_conv:
@@ -628,7 +627,7 @@ async def whatsapp_webhook(
                                 cl_tail = last_n_digits(cl.phone, 8)
                                 if sender_tail and cl_tail and cl_tail == sender_tail:
                                     campaign_conv = cconv
-                                    logger.info(f"[WEBHOOK] ✅ Campaign conv match por telefone: {cl.business_name}")
+                                    logger.info(f"[WEBHOOK] Campaign conv match por telefone: {cl.business_name}")
                                     break
 
                     # Estratégia 3: Match por instância WhatsApp
@@ -649,7 +648,7 @@ async def whatsapp_webhook(
                                 .first()
                             )
                             if campaign_conv:
-                                logger.info(f"[WEBHOOK] ✅ Campaign conv match por instância: {instance}")
+                                logger.info(f"[WEBHOOK] Campaign conv match por instância: {instance}")
 
                     if campaign_conv:
                         logger.info(f"[WEBHOOK] Campaign conversa encontrada: {campaign_conv.id}")
@@ -675,7 +674,7 @@ async def whatsapp_webhook(
                         msg_lower = msg_text.lower()
                         if any(kw in msg_lower for kw in INTEREST_KEYWORDS):
                             campaign_conv.interest_detected = True
-                            logger.info(f"[WEBHOOK] 🎯 Interesse detectado! msg='{msg_text[:50]}'")
+                            logger.info(f"[WEBHOOK] Interesse detectado! msg='{msg_text[:50]}'")
 
                         # Auto-conversão: interest_detected + message_count >= 3
                         if campaign_conv.interest_detected and campaign_conv.message_count >= 3:
@@ -700,7 +699,7 @@ async def whatsapp_webhook(
                                     )
                                     db.add(crm_lead)
                                     cl.status = "converted"
-                                    logger.info(f"[WEBHOOK] 🔄 Lead auto-convertido: {cl.business_name}")
+                                    logger.info(f"[WEBHOOK] Lead auto-convertido: {cl.business_name}")
 
                         # Gerar resposta IA
                         agent = campaign_conv.agent

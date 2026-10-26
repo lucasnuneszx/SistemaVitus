@@ -15,7 +15,7 @@ def dump(sql, *multiparams, **params):
 engine = create_mock_engine("postgresql://", dump)
 
 print("-- SQL SCHEMA PARA SUPABASE (MULTI-TENANT)")
-print("-- ⚠️ EXECUTE ESTE SCRIPT NO EDITOR SQL DO SUPABASE")
+print("-- EXECUTE ESTE SCRIPT NO EDITOR SQL DO SUPABASE")
 print()
 print("-- 1. Limpeza do Banco (Opcional - Remova se não quiser apagar tudo)")
 print("DROP SCHEMA public CASCADE;")

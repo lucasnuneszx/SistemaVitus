@@ -315,7 +315,7 @@ async def run_prospecting(
         )
         db.commit()
 
-        logger.info(f"[PROSPECÇÃO] ✅ Concluída! {new_leads_count} novos leads salvos na tabela campaign_leads (total na campanha: {obj.total_leads_found})")
+        logger.info(f"[PROSPECÇÃO] Concluída! {new_leads_count} novos leads salvos na tabela campaign_leads (total na campanha: {obj.total_leads_found})")
 
         return success_response(
             data={
@@ -328,7 +328,7 @@ async def run_prospecting(
         )
 
     except Exception as e:
-        logger.error(f"[PROSPECÇÃO] ❌ Erro na prospecção da campanha {campaign_id}: {e}", exc_info=True)
+        logger.error(f"[PROSPECÇÃO] Erro na prospecção da campanha {campaign_id}: {e}", exc_info=True)
         logger.error(f"Erro ao executar prospecção: {e}", exc_info=True)
         # Marcar campanha como falha
         try:
@@ -684,7 +684,7 @@ async def _batch_outreach(
             if "error" in result:
                 logger.warning(f"[BATCH_OUTREACH] Erro no lead {lead_id}: {result['error']}")
             else:
-                logger.info(f"[BATCH_OUTREACH] ✅ {result.get('business_name')} OK")
+                logger.info(f"[BATCH_OUTREACH] {result.get('business_name')} OK")
         except Exception as e:
             logger.error(f"[BATCH_OUTREACH] Erro no lead {lead_id}: {e}", exc_info=True)
 
@@ -693,7 +693,7 @@ async def _batch_outreach(
             logger.info(f"[BATCH_OUTREACH] Aguardando {delay_seconds}s...")
             await asyncio.sleep(delay_seconds)
 
-    logger.info(f"[BATCH_OUTREACH] ✅ Lote concluído! {len(lead_ids)} leads processados")
+    logger.info(f"[BATCH_OUTREACH] Lote concluído! {len(lead_ids)} leads processados")
 
 
 @router.post("/{campaign_id}/start-outreach")

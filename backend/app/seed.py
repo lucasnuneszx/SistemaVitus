@@ -228,9 +228,9 @@ def run_seed() -> None:
                     db.add(stage)
                 
                 db.commit()
-                print("✅ Pipeline padrão 'Vendas' criado com 7 etapas")
+                print("Pipeline padrão 'Vendas' criado com 7 etapas")
         except Exception as e:
-            print(f"⚠️  Erro ao criar pipeline padrão (tabelas podem não existir ainda): {e}")
+            print(f"Erro ao criar pipeline padrão (tabelas podem não existir ainda): {e}")
             db.rollback()
         
         # Criar Task Database padrão e properties iniciais
@@ -289,9 +289,9 @@ def run_seed() -> None:
                         db.add(view)
                 
                 db.commit()
-                print("✅ Task Database padrão 'Tarefas' criado com 5 properties e views iniciais")
+                print("Task Database padrão 'Tarefas' criado com 5 properties e views iniciais")
         except Exception as e:
-            print(f"⚠️  Erro ao criar task database padrão (tabelas podem não existir ainda): {e}")
+            print(f"Erro ao criar task database padrão (tabelas podem não existir ainda): {e}")
             db.rollback()
     except ProgrammingError as e:
         if "does not exist" in str(e.orig) or "UndefinedTable" in str(type(e.orig).__name__):

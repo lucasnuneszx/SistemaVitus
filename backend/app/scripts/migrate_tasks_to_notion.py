@@ -20,14 +20,14 @@ def migrate_tasks():
         # Buscar database padrão
         default_db = db.query(TaskDatabase).filter(TaskDatabase.is_default == True).first()
         if not default_db:
-            print("❌ Database padrão não encontrado. Execute o seed primeiro.")
+            print("Database padrão não encontrado. Execute o seed primeiro.")
             return
         
-        print(f"✅ Database padrão encontrado: {default_db.name} (ID: {default_db.id})")
+        print(f"Database padrão encontrado: {default_db.name} (ID: {default_db.id})")
         
         # Buscar todas as tarefas sem database
         tasks = db.query(Tarefa).filter(Tarefa.task_database_id.is_(None)).all()
-        print(f"📋 Encontradas {len(tasks)} tarefas para migrar")
+        print(f"Encontradas {len(tasks)} tarefas para migrar")
         
         # Buscar properties do database
         properties = db.query(TaskProperty).filter(
@@ -85,13 +85,13 @@ def migrate_tasks():
             migrated += 1
         
         db.commit()
-        print(f"✅ {migrated} tarefas migradas com sucesso!")
+        print(f"{migrated} tarefas migradas com sucesso!")
         print(f"   - Todas atribuídas ao database '{default_db.name}'")
         print(f"   - Prioridades e status migrados para property values")
         
     except Exception as e:
         db.rollback()
-        print(f"❌ Erro durante migração: {e}")
+        print(f"Erro durante migração: {e}")
         import traceback
         traceback.print_exc()
         raise

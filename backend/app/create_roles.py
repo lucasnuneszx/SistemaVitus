@@ -25,15 +25,15 @@ def create_roles():
                 role = Role(key=role_key, name=role_name)
                 db.add(role)
                 created_count += 1
-                print(f"✅ Cargo criado: {role_key} - {role_name}")
+                print(f"Cargo criado: {role_key} - {role_name}")
             else:
                 print(f"⏭️  Cargo já existe: {role_key} - {role_name}")
         
         db.commit()
-        print(f"\n✅ Processo concluído! {created_count} cargo(s) criado(s).")
+        print(f"\nProcesso concluído! {created_count} cargo(s) criado(s).")
     except Exception as e:
         db.rollback()
-        print(f"❌ Erro: {e}")
+        print(f"Erro: {e}")
         raise
     finally:
         db.close()

@@ -23,9 +23,9 @@ async def _enviar_mensagem(evolution_url: str, api_key: str, instance: str, phon
         async with httpx.AsyncClient(timeout=15) as client:
             resp = await client.post(url, json=payload, headers=headers)
             resp.raise_for_status()
-            logger.info(f"✅ Worker: Mensagem enviada para {phone}")
+            logger.info(f"Worker: Mensagem enviada para {phone}")
     except Exception as e:
-        logger.error(f"❌ Worker: Falha ao enviar mensagem para {phone}: {e}")
+        logger.error(f"Worker: Falha ao enviar mensagem para {phone}: {e}")
 
 
 async def run_premium_triggers():
@@ -126,10 +126,10 @@ async def start_premium_worker(interval_seconds: int = 300):
     Inicia o loop do worker Premium.
     Roda a cada `interval_seconds` (padrão: 5 minutos).
     """
-    logger.info("🤖 Premium Worker iniciado! Verificando gatilhos a cada 5 minutos...")
+    logger.info("Premium Worker iniciado! Verificando gatilhos a cada 5 minutos...")
     while True:
         try:
             await run_premium_triggers()
         except Exception as e:
-            logger.exception(f"❌ Erro no Premium Worker: {e}")
+            logger.exception(f"Erro no Premium Worker: {e}")
         await asyncio.sleep(interval_seconds)

@@ -32,7 +32,7 @@ async def CRM_Cadastrar_Cliente(lead_id: str):
         finally:
             db.close()
             
-        logger.info(f"✅ CRM: Cliente {lead_id} registrado/verificado.")
+        logger.info(f"CRM: Cliente {lead_id} registrado/verificado.")
         return "✅ Cliente registrado no CRM."
     except Exception as e:
         logger.exception("Erro em CRM_Cadastrar_Cliente")
@@ -58,7 +58,7 @@ async def CRM_Atualizar_Nome(lead_id: str, nome: str):
             db.commit()
         finally:
             db.close()
-        logger.info(f"✅ CRM: Nome atualizado para '{nome}' no lead {lead_id}.")
+        logger.info(f"CRM: Nome atualizado para '{nome}' no lead {lead_id}.")
         return f"✅ Nome '{nome}' salvo no CRM."
     except Exception as e:
         logger.exception("Erro em CRM_Atualizar_Nome")
@@ -109,7 +109,7 @@ async def Kanban_Mover_Card(lead_id: str, coluna: str):
         finally:
             db.close()
             
-        logger.info(f"✅ Kanban: Lead {lead_id} movido para '{coluna}'.")
+        logger.info(f"Kanban: Lead {lead_id} movido para '{coluna}'.")
         return f"✅ Card movido para '{coluna}'."
     except Exception as e:
         logger.exception("Erro em Kanban_Mover_Card")
@@ -147,7 +147,7 @@ async def Kanban_Atualizar_Card(lead_id: str, titulo: str, descricao: str, valor
         finally:
             db.close()
             
-        logger.info(f"✅ Kanban: Card de {lead_id} atualizado. Título='{titulo}', Valor=R${valor_float}")
+        logger.info(f"Kanban: Card de {lead_id} atualizado. Título='{titulo}', Valor=R${valor_float}")
         return f"✅ Card atualizado: '{titulo}' | R${valor_float:.2f}."
     except Exception as e:
         logger.exception("Erro em Kanban_Atualizar_Card")

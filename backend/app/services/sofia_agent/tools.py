@@ -13,15 +13,15 @@ logger = logging.getLogger(__name__)
 async def get_calendar_client():
     try:
         tenant = current_tenant.get()
-        logger.info(f"🔍 Ferramenta acessando contexto do Tenant: {tenant.nome_negocio} (ID: {tenant.id})")
+        logger.info(f"Ferramenta acessando contexto do Tenant: {tenant.nome_negocio} (ID: {tenant.id})")
         if not tenant or not tenant.google_calendar_token:
-            logger.warning(f"⚠️ Token do Google ausente para o Tenant: {tenant.nome_negocio}")
+            logger.warning(f"Token do Google ausente para o Tenant: {tenant.nome_negocio}")
             return None
         import json
         token_data = json.loads(tenant.google_calendar_token) if isinstance(tenant.google_calendar_token, str) else tenant.google_calendar_token
         return GoogleCalendarClient(token_data=token_data)
     except Exception as e:
-        logger.exception(f"❌ Erro crítico ao acessar contexto do Tenant nas ferramentas")
+        logger.exception(f"Erro crítico ao acessar contexto do Tenant nas ferramentas")
         return None
 
 @tool
@@ -88,14 +88,12 @@ async def Criar_agendamento(titulo: str, data_hora_inicio: str, lead_id: str, du
     try:
         start_dt = datetime.datetime.fromisoformat(data_hora_inicio)
         
-        # --- TRAVA DE SEGURANÇA: HORÁRIO COMERCIAL ---
-        # Monday is 0, Sunday is 6
+        # Bloqueia agendamento fora do horário comercial (weekday 6 = domingo)
         if start_dt.weekday() == 6:
             return "ERRO: Fechado aos domingos. Por favor, escolha outro dia (Seg-Sáb)."
         
         if start_dt.hour < 8 or start_dt.hour >= 17:
             return "ERRO: Fora do horário de funcionamento (08:00 às 17:00)."
-        # --------------------------------------------
 
         end_dt = start_dt + datetime.timedelta(minutes=duracao)
         
@@ -107,7 +105,6 @@ async def Criar_agendamento(titulo: str, data_hora_inicio: str, lead_id: str, du
             description=descricao
         )
         
-        # 2. Criar o novo registro no banco
         event_id = event.get("id")
         _executar_agendamento_no_banco(lead_id, event_id, start_dt, end_dt, titulo, descricao)
             
@@ -139,7 +136,7 @@ async def Reagendar_atendimento(lead_id: str, nova_data_hora: str, descricao: st
             try:
                 await client.delete_event(calendar_id="primary", event_id=target_event_id)
             except Exception as e:
-                print(f"Aviso ao deletar no Google: {e}")
+                logger.warning(f"Falha ao remover evento no Google Calendar: {e}")
             delete_appointment_by_event_id(db, target_event_id)
         db.close()
             

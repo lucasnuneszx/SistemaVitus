@@ -243,7 +243,6 @@ def delete_role(
         # Remover todas as permissões associadas (CASCADE deve fazer isso, mas vamos garantir)
         db.query(RolePermission).filter(RolePermission.role_id == role_id).delete()
         
-        # Agora pode deletar a role
         db.delete(role)
         db.commit()
         

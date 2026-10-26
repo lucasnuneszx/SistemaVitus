@@ -18,7 +18,7 @@ def get_evolution_client(tenant: Tenant):
 
 async def handoff_worker():
     """Worker re-activates leads from human handoff after timeout."""
-    logger.info("🚀 Motor de Reativação de Handoff Iniciado")
+    logger.info("Motor de Reativação de Handoff Iniciado")
     while True:
         try:
             db = SessionLocal()
@@ -39,13 +39,13 @@ async def handoff_worker():
                         last_msg_at = last_msg_at.replace(tzinfo=timezone.utc)
                     
                     if last_msg_at and last_msg_at + timedelta(hours=timeout) <= now:
-                        logger.info(f"🔄 Reativando robô para lead {lead.id} (timeout expirado)")
+                        logger.info(f"Reativando robô para lead {lead.id} (timeout expirado)")
                         lead.status = "novo" # sistemavitus status default
                 db.commit()
             finally:
                 db.close()
         except Exception as e:
-            logger.error(f"❌ Erro no Worker de Handoff: {e}")
+            logger.error(f"Erro no Worker de Handoff: {e}")
         await asyncio.sleep(600) # Check every 10 mins
 
 async def start_workers():

@@ -72,10 +72,10 @@ def ensure_default_pipeline(db):
                 db.add(stage)
         
         db.commit()
-        logger.info("✅ Pipeline padrão 'Vendas' criado automaticamente")
+        logger.info("Pipeline padrão 'Vendas' criado automaticamente")
         return True
     except (ProgrammingError, OperationalError) as e:
-        logger.warning(f"⚠️  Não foi possível criar pipeline padrão (tabelas podem não existir): {e}")
+        logger.warning(f"Não foi possível criar pipeline padrão (tabelas podem não existir): {e}")
         db.rollback()
         return False
     except Exception as e:
@@ -144,10 +144,10 @@ def ensure_default_task_database(db):
                     db.add(view)
             
             db.commit()
-            logger.info("✅ Task Database padrão 'Tarefas' criado automaticamente")
+            logger.info("Task Database padrão 'Tarefas' criado automaticamente")
             return True
     except (ProgrammingError, OperationalError) as e:
-        logger.warning(f"⚠️  Não foi possível criar task database padrão (tabelas podem não existir): {e}")
+        logger.warning(f"Não foi possível criar task database padrão (tabelas podem não existir): {e}")
         db.rollback()
         return False
     except Exception as e:
@@ -181,11 +181,11 @@ def ensure_default_roles(db):
         
         if created_count > 0:
             db.commit()
-            logger.info(f"✅ {created_count} role(s) padrão criado(s)")
+            logger.info(f"{created_count} role(s) padrão criado(s)")
         
         return created_count > 0
     except (ProgrammingError, OperationalError) as e:
-        logger.warning(f"⚠️  Não foi possível criar roles padrão (tabelas podem não existir): {e}")
+        logger.warning(f"Não foi possível criar roles padrão (tabelas podem não existir): {e}")
         db.rollback()
         return False
     except Exception as e:
@@ -228,7 +228,7 @@ def ensure_default_permissions(db):
         
         if created_count > 0:
             db.commit()
-            logger.info(f"✅ {created_count} permissão(ões) padrão criada(s)")
+            logger.info(f"{created_count} permissão(ões) padrão criada(s)")
         
         # Atribuir todas as permissões à role ADMIN (idempotente)
         admin_role = db.query(Role).filter(Role.key == ROLE_ADMIN).first()
@@ -248,11 +248,11 @@ def ensure_default_permissions(db):
             
             if assigned_count > 0:
                 db.commit()
-                logger.info(f"✅ {assigned_count} permissão(ões) atribuída(s) à role ADMIN")
+                logger.info(f"{assigned_count} permissão(ões) atribuída(s) à role ADMIN")
         
         return created_count > 0
     except (ProgrammingError, OperationalError) as e:
-        logger.warning(f"⚠️  Não foi possível criar permissões padrão (tabelas podem não existir): {e}")
+        logger.warning(f"Não foi possível criar permissões padrão (tabelas podem não existir): {e}")
         db.rollback()
         return False
     except Exception as e:
@@ -270,7 +270,7 @@ def ensure_default_contract_statuses(db):
     # Status padrão: draft, active, expired, canceled
     # Se a tabela Contrato tiver constraint CHECK ou enum, não precisa criar nada
     # Apenas documentar que esses são os valores válidos
-    logger.info("✅ Status padrão de contratos: draft, active, expired, canceled")
+    logger.info("Status padrão de contratos: draft, active, expired, canceled")
     return True
 
 
@@ -287,9 +287,9 @@ def bootstrap():
         ensure_default_pipeline(db)
         ensure_default_task_database(db)
         ensure_default_contract_statuses(db)
-        logger.info("✅ Bootstrap concluído com sucesso")
+        logger.info("Bootstrap concluído com sucesso")
     except Exception as e:
-        logger.error(f"❌ Erro durante bootstrap: {e}", exc_info=True)
+        logger.error(f"Erro durante bootstrap: {e}", exc_info=True)
     finally:
         db.close()
 

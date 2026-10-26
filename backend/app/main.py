@@ -51,17 +51,17 @@ async def startup_event():
     logger.info("Executando bootstrap automático...")
     try:
         bootstrap()
-        logger.info("✅ Bootstrap concluído")
+        logger.info("Bootstrap concluído")
     except Exception as e:
-        logger.warning(f"⚠️  Erro no bootstrap (pode ser normal se tabelas não existem ainda): {e}")
+        logger.warning(f"Erro no bootstrap (pode ser normal se tabelas não existem ainda): {e}")
         
     try:
         from app.services.sofia_agent.workers import start_workers
         import asyncio
         asyncio.create_task(start_workers())
-        logger.info("✅ Sofia Agent Workers iniciados")
+        logger.info("Sofia Agent Workers iniciados")
     except Exception as e:
-        logger.error(f"⚠️ Erro ao iniciar Sofia Agent Workers: {e}")
+        logger.error(f"Erro ao iniciar Sofia Agent Workers: {e}")
 
 # Adicionar middleware de request_id (deve ser o primeiro)
 app.add_middleware(RequestIDMiddleware)

@@ -21,7 +21,7 @@ class EvolutionAPI:
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=payload, headers=self.headers)
             if response.status_code not in [200, 201]:
-                print(f"❌ Erro Evolution API ({response.status_code}): {response.text}")
+                print(f"Erro Evolution API ({response.status_code}): {response.text}")
             return response.json()
 
     async def send_image_message(self, instance: str, number: str, caption: str, media_url: str):

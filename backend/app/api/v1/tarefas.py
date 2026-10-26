@@ -739,7 +739,6 @@ def get_tarefa_notion_details(
         data['property_values'] = [serialize_data(p) for p in props]
         
     except Exception as e:
-         # print(f"Erro ao carregar blocks/props: {e}")
          data['blocks'] = []
          data['property_values'] = []
 

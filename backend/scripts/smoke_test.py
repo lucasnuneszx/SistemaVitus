@@ -54,7 +54,7 @@ def make_request(
         
         # Validar status code
         if response.status_code != expected_status:
-            print(f"❌ Status code inesperado: esperado {expected_status}, recebido {response.status_code}")
+            print(f"Status code inesperado: esperado {expected_status}, recebido {response.status_code}")
             print(f"   Resposta: {response.text[:500]}")
             return {"ok": False, "error": f"Status {response.status_code}"}
         
@@ -62,35 +62,35 @@ def make_request(
         try:
             response_data = response.json()
         except:
-            print(f"⚠️  Resposta não é JSON válido: {response.text[:200]}")
+            print(f"Resposta não é JSON válido: {response.text[:200]}")
             return {"ok": False, "error": "Resposta não é JSON"}
         
         # Validar formato padronizado
         if "ok" in response_data:
             if response_data["ok"]:
-                print(f"✅ {method} {endpoint} - OK")
+                print(f"{method} {endpoint} - OK")
                 return {"ok": True, "data": response_data.get("data")}
             else:
                 error = response_data.get("error", {})
-                print(f"❌ {method} {endpoint} - Erro: {error.get('message', 'Erro desconhecido')}")
+                print(f"{method} {endpoint} - Erro: {error.get('message', 'Erro desconhecido')}")
                 return {"ok": False, "error": error}
         else:
             # Formato antigo (sem ok) - aceitar se status for 200
             if response.status_code == 200:
-                print(f"✅ {method} {endpoint} - OK (formato antigo)")
+                print(f"{method} {endpoint} - OK (formato antigo)")
                 return {"ok": True, "data": response_data}
             else:
-                print(f"❌ {method} {endpoint} - Status {response.status_code} sem formato padronizado")
+                print(f"{method} {endpoint} - Status {response.status_code} sem formato padronizado")
                 return {"ok": False, "error": response_data}
     
     except requests.exceptions.ConnectionError:
-        print(f"❌ {method} {endpoint} - Erro de conexão (backend não está rodando?)")
+        print(f"{method} {endpoint} - Erro de conexão (backend não está rodando?)")
         return {"ok": False, "error": "ConnectionError"}
     except requests.exceptions.Timeout:
-        print(f"❌ {method} {endpoint} - Timeout")
+        print(f"{method} {endpoint} - Timeout")
         return {"ok": False, "error": "Timeout"}
     except Exception as e:
-        print(f"❌ {method} {endpoint} - Exceção: {str(e)}")
+        print(f"{method} {endpoint} - Exceção: {str(e)}")
         return {"ok": False, "error": str(e)}
 
 
@@ -101,9 +101,9 @@ def test_health():
     if result["ok"]:
         data = result.get("data", {})
         if data.get("db"):
-            print("   ✅ Banco de dados conectado")
+            print("   Banco de dados conectado")
         else:
-            print("   ⚠️  Banco de dados offline")
+            print("   Banco de dados offline")
     return result["ok"]
 
 
@@ -128,18 +128,18 @@ def test_login():
         data = result.get("data", {})
         if isinstance(data, dict) and "access_token" in data:
             auth_token = data["access_token"]
-            print(f"   ✅ Token obtido: {auth_token[:20]}...")
+            print(f"   Token obtido: {auth_token[:20]}...")
             return True
         elif isinstance(data, str):
             # Token direto
             auth_token = data
-            print(f"   ✅ Token obtido: {auth_token[:20]}...")
+            print(f"   Token obtido: {auth_token[:20]}...")
             return True
         else:
-            print(f"   ❌ Token não encontrado na resposta: {data}")
+            print(f"   Token não encontrado na resposta: {data}")
             return False
     else:
-        print("   ⚠️  Login falhou (pode ser normal se usuário não existe)")
+        print("   Login falhou (pode ser normal se usuário não existe)")
         return False
 
 
@@ -147,7 +147,7 @@ def test_profile():
     """Testa endpoint de perfil."""
     print_test("Perfil do Usuário")
     if not auth_token:
-        print("   ⚠️  Pulando (sem token)")
+        print("   Pulando (sem token)")
         return True
     
     result = make_request("GET", "/profile/me")
@@ -161,11 +161,11 @@ def test_pipelines():
     if result["ok"]:
         data = result.get("data", [])
         if isinstance(data, list):
-            print(f"   ✅ {len(data)} pipeline(s) encontrado(s)")
+            print(f"   {len(data)} pipeline(s) encontrado(s)")
             if len(data) == 0:
-                print("   ⚠️  Nenhum pipeline (bootstrap deve criar um)")
+                print("   Nenhum pipeline (bootstrap deve criar um)")
         else:
-            print(f"   ⚠️  Resposta não é lista: {type(data)}")
+            print(f"   Resposta não é lista: {type(data)}")
     return result["ok"]
 
 
@@ -182,12 +182,12 @@ def test_deals_kanban():
             if result["ok"]:
                 data = result.get("data", {})
                 if data and "stages" in data:
-                    print(f"   ✅ Kanban carregado: {len(data.get('stages', []))} etapas")
+                    print(f"   Kanban carregado: {len(data.get('stages', []))} etapas")
                 else:
-                    print(f"   ⚠️  Resposta vazia ou inválida")
+                    print(f"   Resposta vazia ou inválida")
             return result["ok"]
         else:
-            print("   ⚠️  Nenhum pipeline disponível para testar kanban")
+            print("   Nenhum pipeline disponível para testar kanban")
             return True  # Não é erro, apenas não há dados
     return True
 
@@ -199,7 +199,7 @@ def test_clientes():
     if result["ok"]:
         data = result.get("data", [])
         if isinstance(data, list):
-            print(f"   ✅ {len(data)} cliente(s) encontrado(s)")
+            print(f"   {len(data)} cliente(s) encontrado(s)")
     return result["ok"]
 
 
@@ -210,7 +210,7 @@ def test_tarefas():
     if result["ok"]:
         data = result.get("data", [])
         if isinstance(data, list):
-            print(f"   ✅ {len(data)} tarefa(s) encontrada(s)")
+            print(f"   {len(data)} tarefa(s) encontrada(s)")
     return result["ok"]
 
 
@@ -221,7 +221,7 @@ def test_propostas():
     if result["ok"]:
         data = result.get("data", [])
         if isinstance(data, list):
-            print(f"   ✅ {len(data)} proposta(s) encontrada(s)")
+            print(f"   {len(data)} proposta(s) encontrada(s)")
     return result["ok"]
 
 
@@ -232,7 +232,7 @@ def test_projetos():
     if result["ok"]:
         data = result.get("data", [])
         if isinstance(data, list):
-            print(f"   ✅ {len(data)} projeto(s) encontrado(s)")
+            print(f"   {len(data)} projeto(s) encontrado(s)")
     return result["ok"]
 
 
@@ -243,7 +243,7 @@ def test_analytics():
     if result["ok"]:
         data = result.get("data", {})
         if data and "sankey_nodes" in data:
-            print(f"   ✅ Analytics carregado: {len(data.get('sankey_nodes', []))} nós")
+            print(f"   Analytics carregado: {len(data.get('sankey_nodes', []))} nós")
     return result["ok"]
 
 
@@ -273,7 +273,7 @@ def main():
         results["projetos"] = test_projetos()
         results["analytics"] = test_analytics()
     else:
-        print("\n⚠️  Login falhou - pulando testes que requerem autenticação")
+        print("\nLogin falhou - pulando testes que requerem autenticação")
         print("   Execute o seed primeiro: cd backend && python -m app.seed")
     
     # Resumo
@@ -285,16 +285,16 @@ def main():
     total = len(results)
     
     for test_name, result in results.items():
-        status = "✅ PASSOU" if result else "❌ FALHOU"
+        status = "PASSOU" if result else "FALHOU"
         print(f"  {test_name:20s} {status}")
     
     print(f"\nTotal: {passed}/{total} testes passaram")
     
     if passed == total:
-        print("\n🎉 Todos os testes passaram!")
+        print("\nTodos os testes passaram!")
         return 0
     else:
-        print(f"\n⚠️  {total - passed} teste(s) falharam")
+        print(f"\n{total - passed} teste(s) falharam")
         return 1
 
 

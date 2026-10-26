@@ -91,14 +91,14 @@ def generate_recurring_tasks():
                         db.add(new_assignee)
                     
                     generated_count += 1
-                    print(f"✅ Tarefa recorrente gerada: {new_task.titulo} (ID: {new_task.id}) para {next_date}")
+                    print(f"Tarefa recorrente gerada: {new_task.titulo} (ID: {new_task.id}) para {next_date}")
         
         db.commit()
-        print(f"✅ Total de tarefas geradas: {generated_count}")
+        print(f"Total de tarefas geradas: {generated_count}")
         return generated_count
     except Exception as e:
         db.rollback()
-        print(f"❌ Erro ao gerar tarefas recorrentes: {e}")
+        print(f"Erro ao gerar tarefas recorrentes: {e}")
         raise
     finally:
         db.close()

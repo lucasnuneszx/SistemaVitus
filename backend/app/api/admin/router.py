@@ -27,12 +27,11 @@ def setup_first_tenant(data: OnboardingRequest, db: Session = Depends(get_db)):
     Rota de onboarding inicial para cadastrar o primeiro cliente (Tenant) 
     e seu administrador no novo sistema multi-tenant.
     """
-    # 1. Verificar se já existe o inquilino
+
     existing_tenant = db.query(Tenant).filter(Tenant.nome_negocio == data.nome_negocio).first()
     if existing_tenant:
         raise HTTPException(status_code=400, detail="Este negócio já está cadastrado.")
 
-    # 2. Criar o Tenant
     new_tenant = Tenant(
         nome_negocio=data.nome_negocio,
         plano=PlanType.PRO,
@@ -46,7 +45,6 @@ def setup_first_tenant(data: OnboardingRequest, db: Session = Depends(get_db)):
     db.add(new_tenant)
     db.flush()
 
-    # 3. Criar o Usuário Administrador
     hashed_pwd = get_password_hash(data.admin_password)
     new_user = Usuario(
         tenant_id=new_tenant.id,

@@ -51,7 +51,6 @@ def create_tenant(data: TenantCreate, db: Session = Depends(get_db)):
             detail="Já existe um usuário com esse e-mail na plataforma."
         )
 
-    # 1. Criar o Tenant
     new_tenant = Tenant(
         nome_negocio=data.nome_negocio,
         plano=data.plano,
@@ -65,7 +64,6 @@ def create_tenant(data: TenantCreate, db: Session = Depends(get_db)):
     db.add(new_tenant)
     db.flush()
 
-    # 2. Criar o Usuário Dono (Admin) do Tenant
     new_user = Usuario(
         tenant_id=new_tenant.id,
         email=data.admin_email,
